@@ -1,18 +1,18 @@
 ---
 name: reconcile-state
-description: 把新萃取或新判斷的內容，對照專案狀態庫（project-state/decisions.md、backlog.md、risks.md）做合併，標出衝突與新增項目，產生待確認的 diff。當使用者確認要把 scope-doc 或 ingest-doc 的結果正式記錄下來時使用。
+description: 把新萃取、新判斷或新選定的技術方案，對照專案狀態庫（project-state/decisions.md、backlog.md、risks.md）做合併，標出衝突與新增項目，產生待確認的 diff。當使用者確認要把 scope-doc、ingest-doc 或 design-solution 的結果正式記錄下來時使用。
 ---
 
 # 合併進專案狀態庫
 
 ## 前提
 
-專案根目錄應該有 `project-state/decisions.md`、`project-state/backlog.md`、`project-state/risks.md`。如果不存在，先建議使用者執行 `init-project-state` 技能建立。
+專案根目錄應該有 `project-state/decisions.md`、`project-state/backlog.md`、`project-state/risks.md`。如果不存在，先建議使用者執行 `init-project-state` 技能建立。這個 skill 是寫入狀態庫的**唯一入口**——不管來源是 `ingest-doc`/`scope-doc` 的判斷結果，還是 `design-solution` 選定的技術方案，都要經過這裡，不讓其他 skill 各自直接寫檔案造成不一致。
 
 ## 步驟
 
 1. 讀取目前的 `project-state/` 三份檔案的完整內容。
-2. 把新內容（來自 `scope-doc` 或 `ingest-doc` 的輸出）逐項對照：
+2. 把新內容（來自 `scope-doc`、`ingest-doc` 或 `design-solution` 的輸出）逐項對照：
    - **純新增**：狀態庫裡沒有對應項目，直接列為新增建議。
    - **更新**：狀態庫裡有對應項目，但細節不同（例如範圍縮小、風險等級改變）——列為建議修改，並列出修改前後差異。
    - **衝突**：新內容跟既有已定案的決策直接矛盾——**不要自動覆蓋**，獨立列成「衝突待決」區塊，附上兩邊的來源與內容。
