@@ -1,7 +1,7 @@
 {
   "name": "tech-lead-harness",
   "description": "分析 PM/架構師文件、討論與各種來源資料，萃取決策、範圍與風險，並維護專案狀態庫（decisions/backlog/risks）",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "author": {
     "name": "Your Name"
   },
