@@ -1,6 +1,6 @@
 ---
 name: design-solution
-description: 針對一個已定案的 backlog item，提出可行的技術方案與取捨，交由 tech lead 選擇。當使用者說「幫我想一下這個怎麼做」「這個功能該怎麼設計」「有哪些做法可以選」時使用。
+description: 針對一個已定案的 feature backlog item，提出可行的技術方案與取捨，交由 tech lead 選擇。當使用者說「幫我想一下這個怎麼做」「這個功能該怎麼設計」「有哪些做法可以選」時使用。
 ---
 
 # 設計技術方案（不自己拍板）
@@ -9,15 +9,15 @@ description: 針對一個已定案的 backlog item，提出可行的技術方案
 
 ## 前提
 
-先確認要設計方案的項目在 `project-state/backlog.md` 裡是 `[已定案]` 狀態。如果還是 `[待釐清]` 或 `[有衝突]`，提醒使用者範圍還沒定，建議先跑 `scope-doc`/`reconcile-state`，不要在範圍不明的情況下就開始設計方案——那只會做白工。
+先確認要設計方案的 feature slug，以及對應項目在 `project-state/features/<slug>/backlog.md` 裡是 `[已定案]` 狀態。如果還是 `[待釐清]` 或 `[有衝突]`，提醒使用者範圍還沒定，建議先跑 `scope-doc`/`reconcile-state`，不要在範圍不明的情況下就開始設計方案——那只會做白工。
 
 ## 步驟
 
-1. 檢查這個項目有沒有對應的 `specs/<feature>/requirements.md`（由 `write-spec` 產生）。如果有，優先以這份正式規格為依據；如果沒有，才退回直接讀 `project-state/backlog.md`/`decisions.md`。
+1. 檢查 `project-state/features/<slug>/requirements.md`（由 `write-spec` 產生）存不存在。如果有，優先以這份正式規格為依據；如果沒有，才退回直接讀 `project-state/features/<slug>/backlog.md`/`decisions.md`。
 
 2. 呼叫 `code-explorer` subagent，掌握現有程式碼庫現況（相關模組、既有 pattern、可能受影響範圍）。**不要憑自己對這個專案的印象去猜程式碼庫長怎樣，一定要先探勘。**
 
-3. 讀取 `project-state/decisions.md`，確認有沒有跟這個需求相關的既有架構決策或技術選型限制。
+3. 讀取 `project-state/features/<slug>/decisions.md` 與 `project-state/global/decisions.md`，確認有沒有相關的既有架構決策或技術選型限制（分清楚哪個限制來自這個 feature、哪個是全域限制）。
 
 4. 提出**至少兩種**可行方案（除非情境已經明顯只有一種合理做法，且要說明為什麼只有一種）。每種方案都要包含：
    - **做法概述**：具體怎麼做，不是空泛的方向
@@ -26,7 +26,7 @@ description: 針對一個已定案的 backlog item，提出可行的技術方案
    - **需要動到的既有範圍**：對照 `code-explorer` 的探勘結果
    - **複雜度評估**（高/中/低）：附上判斷理由，不是憑感覺打分
 
-5. 如果某個方案會跟 `decisions.md` 裡既有的決策衝突，**必須明確標出來**，不要因為這個方案看起來比較好就悄悄忽略掉舊決策——衝突留給使用者判斷要不要推翻舊決策。
+5. 如果某個方案會跟既有決策（feature 自己的或 global 的）衝突，**必須明確標出來**，不要因為這個方案看起來比較好就悄悄忽略掉舊決策——衝突留給使用者判斷要不要推翻舊決策。
 
 6. 明確拆出這個方案裡「還有疑慮、需要驗證」的部分（可以銜接 POC 候選的概念）跟「單純還沒問清楚」的部分，不要含糊帶過。
 
@@ -43,10 +43,10 @@ description: 針對一個已定案的 backlog item，提出可行的技術方案
 
 ```markdown
 ## 需求回顧
-（一句話重述要解決的問題，引用來源 backlog 項目）
+（一句話重述要解決的問題，引用來源 feature/global 決策項目）
 
 ## 現有架構限制
-（來自 decisions.md 與 code-explorer 探勘結果的既有限制）
+（來自 features/<slug>/decisions.md、global/decisions.md 與 code-explorer 探勘結果的既有限制）
 
 ## 方案 A：概述
 - 優點：
@@ -58,7 +58,7 @@ description: 針對一個已定案的 backlog item，提出可行的技術方案
 （同上）
 
 ## 與既有決策的衝突
-（如果有）
+（如果有，註明是 feature 內部決策還是 global 決策）
 
 ## 待驗證疑慮
 （可能需要 POC 才能確認的部分）
@@ -66,4 +66,4 @@ description: 針對一個已定案的 backlog item，提出可行的技術方案
 
 ## 完成後
 
-詢問使用者選哪個方案。**選定後不要自己動手寫進 `decisions.md`**——建議使用者接著用 `reconcile-state` 把選定的方案正式記錄下來（維持「只有 `reconcile-state` 負責寫入狀態庫」這條規則，避免多個 skill 各自寫檔案造成不一致）。記錄完成後，這個方案的內容就可以在 `dispatch-tasks` 建票時一併放進 ticket 描述裡。
+詢問使用者選哪個方案。**選定後不要自己動手寫進 `decisions.md`**——建議使用者接著用 `reconcile-state` 把選定的方案正式記錄下來（維持「只有 `reconcile-state` 負責寫入狀態庫」這條規則）。記錄完成後，這個方案的內容就可以在 `dispatch-tasks` 建票時一併放進 ticket 描述裡。
